@@ -1,0 +1,23 @@
+/*
+Theme Name: Molenaar Ergonomisch Advies
+Theme URI: https://www.molenaarergonomischadvies.nl
+Author: Marcel Molenaar
+Description: Custom WordPress theme voor Molenaar Ergonomisch Advies.
+Version: 0.1.0
+Requires at least: 6.4
+Requires PHP: 8.2
+License: Proprietary
+Text Domain: molenaar
+*/
+
+/* Basis-styling — verder uit te bouwen */
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    color: #222;
+}
+
+a {
+    color: #0a5;
+}

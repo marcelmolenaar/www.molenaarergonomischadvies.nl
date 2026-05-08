@@ -1,2 +1,30 @@
 .idea
 /_gsdata_
+
+# Env / secrets
+.env
+.env.local
+
+# Lokale uploads (niet versiebeheerd)
+uploads/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-rommel
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+*.swp
+*~
+
+# Build / dependencies (toekomstig)
+node_modules/
+vendor/
+dist/
+build/
