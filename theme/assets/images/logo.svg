@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" role="img" aria-labelledby="logo-title">
+    <title id="logo-title">Molenaar Ergonomisch Advies</title>
+    <circle cx="45" cy="45" r="42" fill="#6B2C91"/>
+    <path d="M18 70 V20 H30 L45 46 L60 20 H72 V70 H62 V38 L45 58 L28 38 V70 Z" fill="#ffffff"/>
+    <text x="100" y="45" font-family="Georgia, 'Times New Roman', serif" font-size="28" font-weight="600" letter-spacing="3" fill="#6B2C91">MOLENAAR</text>
+    <text x="100" y="70" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="20" fill="#C2367C">Ergonomisch Advies</text>
+</svg>

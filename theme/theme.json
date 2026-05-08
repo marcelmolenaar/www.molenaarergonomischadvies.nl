@@ -1,0 +1,25 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/theme.json",
+    "version": 2,
+    "settings": {
+        "appearanceTools": true,
+        "color": {
+            "palette": [
+                { "slug": "purple",      "name": "Paars",      "color": "#6B2C91" },
+                { "slug": "purple-dark", "name": "Paars donker","color": "#5C2A8A" },
+                { "slug": "magenta",     "name": "Magenta",    "color": "#C2367C" },
+                { "slug": "ink",         "name": "Tekst",      "color": "#222222" },
+                { "slug": "ink-soft",    "name": "Tekst zacht","color": "#555555" },
+                { "slug": "bg",          "name": "Achtergrond","color": "#FFFFFF" },
+                { "slug": "bg-alt",      "name": "Achtergrond licht","color": "#FAF8FB" },
+                { "slug": "border",      "name": "Rand",       "color": "#EBE5EF" }
+            ]
+        },
+        "typography": {
+            "fontFamilies": [
+                { "slug": "system", "name": "Systeem", "fontFamily": "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" },
+                { "slug": "serif",  "name": "Serif",  "fontFamily": "Georgia, 'Times New Roman', serif" }
+            ]
+        }
+    }
+}

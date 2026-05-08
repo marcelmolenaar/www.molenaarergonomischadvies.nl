@@ -1,16 +1,18 @@
-<?php get_header(); ?>
+<?php
+/**
+ * Fallback-template — komt zelden in beeld bij een page-only site.
+ */
+get_header();
+?>
 
-<main class="site-main">
-    <?php if (have_posts()) : ?>
-        <?php while (have_posts()) : the_post(); ?>
-            <article <?php post_class(); ?>>
-                <h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
-                <?php the_excerpt(); ?>
-            </article>
-        <?php endwhile; ?>
-    <?php else : ?>
-        <p><?php esc_html_e('Geen berichten gevonden.', 'molenaar'); ?></p>
+<article class="wrap" style="padding-block: var(--s-5);">
+    <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
+        <h1><?php the_title(); ?></h1>
+        <?php the_content(); ?>
+    <?php endwhile; else : ?>
+        <h1><?php esc_html_e('Pagina niet gevonden', 'molenaar'); ?></h1>
+        <p><a href="<?php echo esc_url(home_url('/')); ?>"><?php esc_html_e('Terug naar de homepage', 'molenaar'); ?></a></p>
     <?php endif; ?>
-</main>
+</article>
 
-<?php get_footer(); ?>
+<?php get_footer();

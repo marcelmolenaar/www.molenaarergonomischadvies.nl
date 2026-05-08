@@ -2,22 +2,174 @@
 Theme Name: Molenaar Ergonomisch Advies
 Theme URI: https://www.molenaarergonomischadvies.nl
 Author: Marcel Molenaar
-Description: Custom WordPress theme voor Molenaar Ergonomisch Advies.
-Version: 0.1.0
+Description: Custom mobile-first WordPress theme voor Molenaar Ergonomisch Advies.
+Version: 0.2.0
 Requires at least: 6.4
 Requires PHP: 8.2
 License: Proprietary
 Text Domain: molenaar
 */
 
-/* Basis-styling — verder uit te bouwen */
-body {
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    line-height: 1.6;
-    margin: 0;
-    color: #222;
+:root {
+    --c-purple: #6B2C91;
+    --c-purple-dark: #5C2A8A;
+    --c-magenta: #C2367C;
+    --c-ink: #222;
+    --c-ink-soft: #555;
+    --c-bg: #fff;
+    --c-bg-alt: #faf8fb;
+    --c-border: #ebe5ef;
+
+    --w-max: 64rem;
+    --r: .5rem;
+
+    --s-1: .5rem;
+    --s-2: 1rem;
+    --s-3: 1.5rem;
+    --s-4: 2rem;
+    --s-5: 3rem;
+    --s-6: 5rem;
 }
 
-a {
-    color: #0a5;
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--c-ink);
+    background: var(--c-bg);
+    -webkit-font-smoothing: antialiased;
 }
+
+img, svg { max-width: 100%; height: auto; display: block; }
+
+a {
+    color: var(--c-purple);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color .15s;
+}
+a:hover { color: var(--c-magenta); }
+
+h1, h2, h3 {
+    color: var(--c-purple-dark);
+    line-height: 1.2;
+    font-weight: 600;
+    margin: 0 0 var(--s-2);
+}
+h1 { font-size: clamp(1.75rem, 5.5vw, 2.75rem); }
+h2 { font-size: clamp(1.4rem, 3.5vw, 2rem); margin-top: var(--s-5); }
+h3 { font-size: 1.15rem; margin-top: var(--s-3); }
+
+p, ul, ol { margin: 0 0 var(--s-2); }
+ul, ol { padding-inline-start: 1.25rem; }
+blockquote {
+    margin: var(--s-3) 0;
+    padding-inline-start: var(--s-3);
+    border-inline-start: 3px solid var(--c-magenta);
+    color: var(--c-ink-soft);
+    font-style: italic;
+}
+
+.wrap { max-width: var(--w-max); padding-inline: var(--s-3); margin-inline: auto; }
+.skip-link { position: absolute; left: -9999px; }
+.skip-link:focus { position: static; }
+
+/* Header */
+.site-header { border-bottom: 1px solid var(--c-border); padding-block: var(--s-2); }
+.site-header .inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-2); }
+.site-logo { display: inline-flex; }
+.site-logo svg { width: clamp(180px, 60vw, 280px); height: auto; }
+
+.primary-nav ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-3); }
+.primary-nav a { color: var(--c-ink); text-decoration: none; font-weight: 500; }
+.primary-nav .current-menu-item > a { color: var(--c-purple); }
+.primary-nav a:hover { color: var(--c-purple); }
+
+/* Hero */
+.hero { padding-block: var(--s-5); }
+.hero .lead { font-size: 1.125rem; color: var(--c-ink-soft); max-width: 38rem; }
+.hero .portrait { margin-top: var(--s-4); border-radius: var(--r); aspect-ratio: 1 / 1; object-fit: cover; max-width: 16rem; }
+.hero .grid { display: grid; gap: var(--s-4); }
+
+@media (min-width: 48em) {
+    .hero .grid { grid-template-columns: 1fr 16rem; align-items: center; }
+    .hero .portrait { margin-top: 0; max-width: 100%; }
+}
+
+.cta {
+    display: inline-block; margin-top: var(--s-3);
+    background: var(--c-purple); color: #fff;
+    padding: .75rem 1.25rem; border-radius: var(--r);
+    text-decoration: none; font-weight: 600;
+    transition: background .15s;
+}
+.cta:hover { background: var(--c-magenta); color: #fff; }
+
+/* Cards (dienst-tegels op homepage) */
+.cards { display: grid; gap: var(--s-3); grid-template-columns: 1fr; margin-top: var(--s-3); }
+@media (min-width: 36em) { .cards { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 56em) { .cards { grid-template-columns: repeat(3, 1fr); } }
+.card {
+    padding: var(--s-3);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r);
+    background: var(--c-bg);
+    transition: border-color .15s, transform .15s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+.card h3 { margin-top: 0; }
+.card p { color: var(--c-ink-soft); margin-bottom: 0; }
+.card:hover { border-color: var(--c-purple); transform: translateY(-2px); }
+
+/* Service detail (op /diensten/) */
+.toc { background: var(--c-bg-alt); padding: var(--s-3); border-radius: var(--r); margin-bottom: var(--s-4); }
+.toc h2 { margin-top: 0; font-size: 1rem; color: var(--c-ink-soft); text-transform: uppercase; letter-spacing: 1px; }
+.toc ul { padding-inline-start: 1.25rem; margin-bottom: 0; }
+.toc a { color: var(--c-purple-dark); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+
+.service { padding-block: var(--s-4); border-bottom: 1px solid var(--c-border); }
+.service:last-child { border-bottom: 0; }
+.service h2 { margin-top: 0; scroll-margin-top: 5rem; }
+
+/* Contact */
+.contact-card {
+    background: var(--c-bg-alt);
+    padding: var(--s-4);
+    border-radius: var(--r);
+    max-width: 32rem;
+}
+.contact-card dl { display: grid; grid-template-columns: max-content 1fr; gap: var(--s-1) var(--s-3); margin: 0; }
+.contact-card dt { color: var(--c-ink-soft); font-weight: 500; }
+.contact-card dd { margin: 0; }
+
+/* About / over */
+.over .grid { display: grid; gap: var(--s-4); }
+.over .portrait { border-radius: var(--r); aspect-ratio: 1 / 1; object-fit: cover; max-width: 16rem; }
+
+@media (min-width: 48em) {
+    .over .grid { grid-template-columns: 16rem 1fr; align-items: start; }
+    .over .portrait { max-width: 100%; }
+}
+
+/* Footer */
+.site-footer {
+    margin-top: var(--s-6);
+    padding-block: var(--s-4);
+    background: var(--c-bg-alt);
+    color: var(--c-ink-soft);
+    font-size: .9rem;
+    border-top: 1px solid var(--c-border);
+}
+.site-footer .grid { display: grid; gap: var(--s-3); grid-template-columns: 1fr; }
+@media (min-width: 36em) { .site-footer .grid { grid-template-columns: 1fr 1fr; } }
+.site-footer h3 { color: var(--c-purple-dark); font-size: 1rem; margin-top: 0; }
+.site-footer a { color: inherit; }
+.site-footer a:hover { color: var(--c-purple); }
