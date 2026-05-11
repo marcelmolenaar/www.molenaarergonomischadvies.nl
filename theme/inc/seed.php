@@ -1,7 +1,10 @@
 <?php
 /**
- * Content seed — wordt op theme-activatie ingelezen om de 4 pages aan te maken.
+ * Content seed — wordt op theme-activatie ingelezen om de hoofdpages aan te maken.
  * Aanpassen kan ook achteraf via WP-admin (Pagina's).
+ *
+ * Het Nieuws-archief is geen page maar het CPT-archief van post_type 'nieuws'
+ * (geregistreerd in functions.php) — daarom geen entry hier.
  */
 
 if (!defined('ABSPATH')) {

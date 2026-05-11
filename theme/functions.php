@@ -32,11 +32,41 @@ add_action('wp_enqueue_scripts', function (): void {
 });
 
 /**
- * Veeg blog-rommel uit admin en frontend (deze site is geen blog).
+ * Veeg blog-rommel uit admin (deze site gebruikt CPT "Nieuws", geen WP Posts).
  */
 add_action('admin_menu', function (): void {
-    remove_menu_page('edit.php');           // Berichten
+    remove_menu_page('edit.php');           // Berichten (WP Posts)
     remove_menu_page('edit-comments.php');  // Reacties
+});
+
+/**
+ * Custom Post Type "Nieuws" — eigen sectie in WP-admin, eigen archief op /nieuws/.
+ */
+add_action('init', function (): void {
+    register_post_type('nieuws', [
+        'label'              => __('Nieuws', 'molenaar'),
+        'labels'             => [
+            'name'               => __('Nieuws', 'molenaar'),
+            'singular_name'      => __('Nieuwsbericht', 'molenaar'),
+            'add_new'            => __('Nieuw bericht', 'molenaar'),
+            'add_new_item'       => __('Nieuw nieuwsbericht', 'molenaar'),
+            'edit_item'          => __('Bericht bewerken', 'molenaar'),
+            'new_item'           => __('Nieuw bericht', 'molenaar'),
+            'view_item'          => __('Bericht bekijken', 'molenaar'),
+            'search_items'       => __('Berichten zoeken', 'molenaar'),
+            'not_found'          => __('Geen berichten gevonden', 'molenaar'),
+            'not_found_in_trash' => __('Geen berichten in prullenbak', 'molenaar'),
+            'menu_name'          => __('Nieuws', 'molenaar'),
+        ],
+        'public'             => true,
+        'show_in_rest'       => true, // block editor
+        'has_archive'        => 'nieuws',
+        'menu_position'      => 5,
+        'menu_icon'          => 'dashicons-megaphone',
+        'supports'           => ['title', 'editor', 'excerpt', 'thumbnail', 'revisions'],
+        'rewrite'            => ['slug' => 'nieuws', 'with_front' => false],
+        'capability_type'    => 'post',
+    ]);
 });
 
 add_action('wp_dashboard_setup', function (): void {
@@ -48,8 +78,9 @@ add_filter('comments_open', '__return_false', 20, 2);
 add_filter('pings_open',    '__return_false', 20, 2);
 
 /**
- * Eenmalige seed bij theme-activatie: maak de 4 pages aan, koppel templates,
- * zet front page en bouw het hoofdmenu. Idempotent — bestaande pages worden niet overschreven.
+ * Eenmalige seed bij theme-activatie: maak de hoofdpages aan, koppel templates,
+ * zet front page + posts page, seed nieuwsitems, en bouw het hoofdmenu.
+ * Idempotent — bestaande pages en posts worden niet overschreven.
  */
 add_action('after_switch_theme', 'molenaar_seed');
 
@@ -84,6 +115,54 @@ function molenaar_seed(): void {
         update_option('page_on_front', $ids['home']);
     }
 
+    // Migratie van eerdere A-aanpak (WP Posts): page_for_posts uitzetten, oude "Nieuws"-page
+    // weggooien (slug-conflict met /nieuws/-archief), en eerder geseede 'post'-entries
+    // omzetten naar het CPT 'nieuws'.
+    if ((int) get_option('page_for_posts') > 0) {
+        update_option('page_for_posts', 0);
+    }
+    $old_nieuws_page = get_page_by_path('nieuws');
+    if ($old_nieuws_page && $old_nieuws_page->post_type === 'page') {
+        wp_delete_post($old_nieuws_page->ID, true); // hard delete — anders blokkeert het de slug
+    }
+
+    // Deze site gebruikt CPT 'nieuws' — eventuele losse WP Posts (zoals het default
+    // "Hallo wereld!"-bericht) horen er niet en worden naar de prullenbak verplaatst.
+    $leftover_posts = get_posts([
+        'post_type'   => 'post',
+        'post_status' => ['publish', 'draft', 'pending', 'future', 'private'],
+        'numberposts' => -1,
+    ]);
+    foreach ($leftover_posts as $leftover) {
+        wp_trash_post($leftover->ID);
+    }
+
+    $posts_seed = require get_theme_file_path('inc/seed-posts.php');
+    foreach ($posts_seed as $post) {
+        // Bestaand item met deze slug? Converteer naar 'nieuws' indien nog op 'post'.
+        $existing = get_posts([
+            'name'        => $post['slug'],
+            'post_type'   => ['post', 'nieuws'],
+            'post_status' => 'any',
+            'numberposts' => 1,
+        ]);
+        if ($existing) {
+            $existing_post = $existing[0];
+            if ($existing_post->post_type !== 'nieuws') {
+                set_post_type($existing_post->ID, 'nieuws');
+            }
+            continue;
+        }
+        wp_insert_post([
+            'post_type'    => 'nieuws',
+            'post_status'  => 'publish',
+            'post_title'   => $post['title'],
+            'post_name'    => $post['slug'],
+            'post_excerpt' => $post['excerpt'] ?? '',
+            'post_content' => $post['content'],
+        ]);
+    }
+
     // Pretty permalinks aanzetten zodat /diensten/ etc. werken.
     // Belangrijk: de globale $wp_rewrite leest 'permalink_structure' op `init`. Op het moment
     // dat deze hook draait staat die nog op de oude (lege) waarde in geheugen, dus alleen
@@ -116,22 +195,70 @@ function molenaar_seed(): void {
     }
 
     if ($menu_id) {
-        $existing_object_ids = array_map(
-            static fn($item) => (int) $item->object_id,
-            wp_get_nav_menu_items($menu_id) ?: []
-        );
+        $desired_order = ['home', 'diensten', 'nieuws', 'over', 'contact'];
 
-        foreach (['home', 'diensten', 'over', 'contact'] as $slug) {
-            if (empty($ids[$slug]) || in_array((int) $ids[$slug], $existing_object_ids, true)) {
+        // 1. Verwijder verweesde menu-items (refereren aan een verwijderde page).
+        foreach (wp_get_nav_menu_items($menu_id) ?: [] as $item) {
+            if ($item->type === 'post_type' && $item->object === 'page') {
+                $page = get_post((int) $item->object_id);
+                if (!$page || $page->post_status === 'trash') {
+                    wp_delete_post($item->ID, true);
+                }
+            }
+        }
+
+        // 2. Inventariseer wat er al aanwezig is.
+        $present = [];
+        foreach (wp_get_nav_menu_items($menu_id) ?: [] as $item) {
+            if ($item->type === 'post_type_archive' && $item->object === 'nieuws') {
+                $present['nieuws'] = true;
+            } elseif ($item->type === 'post_type' && $item->object === 'page') {
+                $page = get_post((int) $item->object_id);
+                if ($page) {
+                    $present[$page->post_name] = true;
+                }
+            }
+        }
+
+        // 3. Voeg ontbrekende items toe (page voor de hoofdpages, post_type_archive voor Nieuws).
+        foreach ($desired_order as $slug) {
+            if (!empty($present[$slug])) {
                 continue;
             }
-            wp_update_nav_menu_item($menu_id, 0, [
-                'menu-item-title'     => get_the_title($ids[$slug]),
-                'menu-item-object'    => 'page',
-                'menu-item-object-id' => $ids[$slug],
-                'menu-item-type'      => 'post_type',
-                'menu-item-status'    => 'publish',
-            ]);
+            if ($slug === 'nieuws') {
+                wp_update_nav_menu_item($menu_id, 0, [
+                    'menu-item-title'  => __('Nieuws', 'molenaar'),
+                    'menu-item-object' => 'nieuws',
+                    'menu-item-type'   => 'post_type_archive',
+                    'menu-item-status' => 'publish',
+                ]);
+            } elseif (!empty($ids[$slug])) {
+                wp_update_nav_menu_item($menu_id, 0, [
+                    'menu-item-title'     => get_the_title($ids[$slug]),
+                    'menu-item-object'    => 'page',
+                    'menu-item-object-id' => $ids[$slug],
+                    'menu-item-type'      => 'post_type',
+                    'menu-item-status'    => 'publish',
+                ]);
+            }
+        }
+
+        // 4. Sorteer in gewenste volgorde.
+        $position = array_flip($desired_order);
+        foreach (wp_get_nav_menu_items($menu_id) ?: [] as $item) {
+            $slug = null;
+            if ($item->type === 'post_type_archive' && $item->object === 'nieuws') {
+                $slug = 'nieuws';
+            } elseif ($item->type === 'post_type' && $item->object === 'page') {
+                $page = get_post((int) $item->object_id);
+                $slug = $page ? $page->post_name : null;
+            }
+            if ($slug !== null && isset($position[$slug])) {
+                $target = $position[$slug] + 1;
+                if ((int) $item->menu_order !== $target) {
+                    wp_update_post(['ID' => $item->ID, 'menu_order' => $target]);
+                }
+            }
         }
 
         $locations = get_theme_mod('nav_menu_locations', []);
@@ -140,31 +267,49 @@ function molenaar_seed(): void {
             set_theme_mod('nav_menu_locations', $locations);
         }
     }
+
+    // Flush rewrite rules — CPT-registratie heeft nieuwe routes geïntroduceerd voor /nieuws/.
+    flush_rewrite_rules(true);
 }
 
 /**
  * Fallback voor wp_nav_menu wanneer er nog geen hoofdmenu is gekoppeld.
- * Toont de 4 hoofdpages in vaste volgorde — zo verschijnt er altijd een menu in de header.
+ * Toont de hoofdpages in vaste volgorde — zo verschijnt er altijd een menu in de header.
  */
 function molenaar_default_menu(): void {
     $items = [];
-    foreach (['home', 'diensten', 'over', 'contact'] as $slug) {
+    foreach (['home', 'diensten', 'nieuws', 'over', 'contact'] as $slug) {
+        if ($slug === 'nieuws') {
+            $url = get_post_type_archive_link('nieuws');
+            if ($url) {
+                $items[] = [
+                    'url'   => $url,
+                    'title' => __('Nieuws', 'molenaar'),
+                    'is_current' => is_post_type_archive('nieuws') || is_singular('nieuws'),
+                ];
+            }
+            continue;
+        }
         $page = get_page_by_path($slug);
         if ($page) {
-            $items[] = $page;
+            $items[] = [
+                'url'   => get_permalink($page),
+                'title' => $page->post_title,
+                'is_current' => is_page($page->ID),
+            ];
         }
     }
     if (!$items) {
         return;
     }
     echo '<ul class="menu">';
-    foreach ($items as $page) {
-        $current = is_page($page->ID) ? ' class="current-menu-item"' : '';
+    foreach ($items as $item) {
+        $current = $item['is_current'] ? ' class="current-menu-item"' : '';
         printf(
             '<li%s><a href="%s">%s</a></li>',
             $current,
-            esc_url(get_permalink($page)),
-            esc_html($page->post_title)
+            esc_url($item['url']),
+            esc_html($item['title'])
         );
     }
     echo '</ul>';
@@ -176,4 +321,22 @@ function molenaar_default_menu(): void {
 function molenaar_inline_svg(string $relative): string {
     $path = get_theme_file_path('assets/images/' . $relative);
     return is_readable($path) ? (string) file_get_contents($path) : '';
+}
+
+/**
+ * Helper: render een Lucide-stijl line-icon op naam.
+ */
+function molenaar_icon(string $name, int $size = 28): string {
+    static $icons = null;
+    if ($icons === null) {
+        $icons = require get_theme_file_path('inc/icons.php');
+    }
+    if (empty($icons[$name])) {
+        return '';
+    }
+    return sprintf(
+        '<svg class="card-icon" width="%1$d" height="%1$d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">%2$s</svg>',
+        $size,
+        $icons[$name]
+    );
 }

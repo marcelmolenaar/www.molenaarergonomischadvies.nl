@@ -1,7 +1,6 @@
 services:
   db:
     image: mariadb:11
-    restart: unless-stopped
     environment:
       MARIADB_DATABASE: ${WP_DB_NAME}
       MARIADB_USER: ${WP_DB_USER}
@@ -20,7 +19,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    restart: unless-stopped
     ports:
       - "8181:80"
     environment:
@@ -41,8 +39,7 @@ services:
   phpmyadmin:
     image: phpmyadmin:latest
     depends_on:
-      - db
-    restart: unless-stopped
+      - db    
     ports:
       - "8182:80"
     environment:

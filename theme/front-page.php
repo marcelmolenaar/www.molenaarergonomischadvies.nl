@@ -34,26 +34,34 @@ $contact_page  = get_page_by_path('contact');
     </div>
 </section>
 
-<section class="wrap" aria-labelledby="diensten-heading">
-    <h2 id="diensten-heading">Diensten</h2>
-    <div class="cards">
-        <?php foreach ($services as $s) : ?>
-            <a class="card" href="<?php echo $diensten_page ? esc_url(get_permalink($diensten_page) . '#' . $s['anchor']) : '#'; ?>">
-                <h3><?php echo esc_html($s['title']); ?></h3>
-                <p><?php echo esc_html($s['lead']); ?></p>
-            </a>
-        <?php endforeach; ?>
+<section class="cards-section" aria-labelledby="diensten-heading">
+    <div class="wrap">
+        <p class="section-eyebrow">Diensten</p>
+        <h2 id="diensten-heading" class="section-title">Wat ik voor uw organisatie kan betekenen</h2>
+        <p class="section-intro">Praktisch, onderbouwd en altijd afgestemd op de realiteit van uw organisatie.</p>
+        <div class="cards">
+            <?php foreach ($services as $s) : ?>
+                <a class="card" href="<?php echo $diensten_page ? esc_url(get_permalink($diensten_page) . '#' . $s['anchor']) : '#'; ?>">
+                    <?php echo molenaar_icon($s['icon']); ?>
+                    <h3><?php echo esc_html($s['title']); ?></h3>
+                    <p><?php echo esc_html($s['lead']); ?></p>
+                </a>
+            <?php endforeach; ?>
+        </div>
     </div>
 </section>
 
 <?php if ($over_page) : ?>
-    <section class="wrap over" aria-labelledby="over-heading" style="margin-top: var(--s-6);">
-        <h2 id="over-heading">Over Ellen Molenaar</h2>
-        <div class="grid">
-            <img class="portrait" src="<?php echo esc_url(get_theme_file_uri('assets/images/ellen.jpg')); ?>" alt="" aria-hidden="true">
-            <div>
-                <p>Ruim twintig jaar ervaring als ergonoom in uiteenlopende sectoren — van ziekenhuizen en laboratoria tot gemeenten, industrie en onderwijs. Duurzame oplossingen ontstaan volgens Ellen alleen wanneer medewerkers en leidinggevenden actief worden betrokken.</p>
-                <p><a href="<?php echo esc_url(get_permalink($over_page)); ?>">Lees verder &rarr;</a></p>
+    <section class="home-over-section" aria-labelledby="over-heading">
+        <div class="wrap over">
+            <p class="section-eyebrow">Over Ellen</p>
+            <h2 id="over-heading" class="section-title">Twintig jaar praktijkervaring</h2>
+            <div class="grid">
+                <img class="portrait" src="<?php echo esc_url(get_theme_file_uri('assets/images/ellen.jpg')); ?>" alt="" aria-hidden="true">
+                <div>
+                    <p>Ellen Molenaar werkt al ruim twintig jaar als ergonoom in uiteenlopende sectoren — van ziekenhuizen en laboratoria tot gemeenten, industrie en onderwijs. Duurzame oplossingen ontstaan volgens haar alleen wanneer medewerkers en leidinggevenden actief worden betrokken: zij weten waar de knelpunten liggen en hebben vaak al verrassend goede ideeën voor verbetering.</p>
+                    <p><a href="<?php echo esc_url(get_permalink($over_page)); ?>">Lees meer over Ellen &rarr;</a></p>
+                </div>
             </div>
         </div>
     </section>
