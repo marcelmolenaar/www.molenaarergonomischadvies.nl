@@ -33,7 +33,7 @@ services:
         define('SCRIPT_DEBUG', true);
     volumes:
       - wp_core:/var/www/html
-      - ./theme:/var/www/html/wp-content/themes/molenaar
+      - ./wp-content/themes/molenaar:/var/www/html/wp-content/themes/molenaar
       - ./uploads:/var/www/html/wp-content/uploads
 
   phpmyadmin:

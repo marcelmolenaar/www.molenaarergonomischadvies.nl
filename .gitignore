@@ -6,7 +6,7 @@
 .env.local
 
 # Lokale uploads (niet versiebeheerd)
-uploads/
+/uploads/
 
 # Logs
 *.log
@@ -28,3 +28,34 @@ node_modules/
 vendor/
 dist/
 build/
+
+# ---------------------------------------------------------------
+# WordPress core — niet onder versiebeheer.
+# Dit zorgt dat public_html op de productieserver een git checkout
+# kan zijn die alleen wp-content/themes/molenaar/ ververst.
+# ---------------------------------------------------------------
+
+# WP core PHP-bestanden in de root
+/wp-admin/
+/wp-includes/
+/wp-*.php
+/index.php
+/license.txt
+/readme.html
+/xmlrpc.php
+
+# wp-config.php bevat productie-secrets — nooit committen
+/wp-config.php
+
+# wp-content: alleen ons eigen theme tracken
+/wp-content/uploads/
+/wp-content/upgrade/
+/wp-content/cache/
+/wp-content/backup/
+/wp-content/plugins/
+/wp-content/index.php
+/wp-content/debug.log
+
+# Themes: alleen ons custom theme, niet de WP defaults (twentytwentyfour, etc.)
+/wp-content/themes/*
+!/wp-content/themes/molenaar/

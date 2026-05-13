@@ -9,7 +9,7 @@ WordPress-site met custom theme voor Molenaar Ergonomisch Advies.
 - phpMyAdmin (dev)
 - Docker Compose
 
-## Eerste keer opstarten
+## Eerste keer opstarten (lokale dev)
 
 ```bash
 cp .env.example .env       # pas wachtwoorden aan in .env
@@ -27,63 +27,99 @@ Vervolgens in de browser:
 2. Ga naar *Weergave → Thema's* en activeer **Molenaar Ergonomisch Advies**.
 3. **Klaar.** De theme-activatie maakt automatisch het volgende aan:
    - 4 pages: *Home*, *Diensten*, *Over*, *Contact* — met de teksten van Ellen
-   - Hoofdmenu met deze 4 items, gekoppeld aan de "primary"-locatie
+   - CPT "Nieuws" met 2 voorbeeldartikelen
+   - Hoofdmenu met de items, gekoppeld aan de "primary"-locatie
    - Front page → *Home*
-   - Pretty permalinks (`/diensten/` etc.)
+   - Pretty permalinks (`/diensten/`, `/nieuws/{slug}/` etc.)
 
-Wil Ellen een tekst aanpassen? Inloggen op `/wp-admin/`, *Pagina's* → bewerken.
+Wil Ellen een tekst aanpassen? Inloggen op `/wp-admin/`, *Pagina's* → bewerken. Nieuwsberichten via *Nieuws → Nieuw bericht*.
 
 ## Structuur
+
+De repo-structuur **spiegelt de WordPress-structuur**, zodat de productieserver simpelweg een `git checkout` van deze repo is — `git pull` ververst dan automatisch de theme-bestanden.
 
 ```
 .
 ├── docker-compose.yml
 ├── .env.example
-├── content/                 # bron-teksten in markdown (referentie)
+├── content/                                 # bron-teksten in markdown (referentie)
 │   ├── over.md
 │   ├── diensten.md
-│   └── contact.md
-├── theme/                   # custom theme — versionbeheerd
-│   ├── style.css            # mobile-first CSS, ~150 regels
-│   ├── theme.json           # block editor color palette
-│   ├── functions.php        # theme setup + auto-seed van pages/menu
-│   ├── header.php / footer.php
-│   ├── front-page.php       # homepage met hero + dienst-tegels + over-teaser
-│   ├── page.php             # generieke fallback
-│   ├── page-diensten.php    # 9 diensten met sticky inhoudsopgave
-│   ├── page-over.php        # 2-koloms layout met portretfoto
-│   ├── page-contact.php     # contactgegevens-kaart
-│   ├── index.php            # 404-fallback
-│   ├── inc/
-│   │   ├── seed.php         # content voor de 4 pages (eenmalig bij activatie)
-│   │   └── services.php     # diensten-array voor homepage-tegels
-│   └── assets/images/
-│       ├── logo.svg         # full logo (cirkel + woordmerk)
-│       ├── logo-mark.svg    # alleen M-cirkel (favicon, klein gebruik)
-│       └── ellen.jpg        # portretfoto
-└── uploads/                 # WP uploads (niet versiebeheerd)
+│   ├── contact.md
+│   ├── nieuws-beweegcultuur.md
+│   └── nieuws-zitten-roken.md
+├── wp-content/
+│   └── themes/
+│       └── molenaar/                        # custom theme — versionbeheerd
+│           ├── style.css                    # mobile-first CSS
+│           ├── theme.json                   # block editor color palette
+│           ├── functions.php                # theme setup + auto-seed + CPT Nieuws
+│           ├── header.php / footer.php
+│           ├── front-page.php               # homepage met hero + dienst-tegels
+│           ├── page.php                     # generieke fallback
+│           ├── page-{diensten,over,contact}.php
+│           ├── archive-nieuws.php           # nieuws-archief
+│           ├── single-nieuws.php            # individueel nieuwsbericht
+│           ├── index.php                    # 404-fallback
+│           ├── inc/
+│           │   ├── seed.php                 # content voor de pages
+│           │   ├── seed-posts.php           # content voor de nieuwsberichten
+│           │   ├── services.php             # diensten-array voor homepage
+│           │   └── icons.php                # Lucide-stijl icons
+│           ├── assets/images/
+│           │   ├── logo.svg
+│           │   ├── logo-mark.svg            # favicon
+│           │   └── ellen.jpg                # portretfoto
+│           └── tools/
+│               ├── run-seed.php             # CLI: handmatig de seed draaien
+│               └── verify.php               # CLI: DB-state check
+└── uploads/                                 # WP uploads (gitignored, lokale dev)
 ```
 
-WordPress-core en de database draaien in Docker-volumes (`wp_core`, `db_data`). Alleen `theme/` en `content/` staan onder versiebeheer.
+WordPress-core en de database draaien in Docker-volumes (`wp_core`, `db_data`). Alleen `wp-content/themes/molenaar/` en `content/` staan onder versiebeheer.
+
+## Productie-deploy (Ubuntu VPS)
+
+Op de VPS is `public_html` een directe git-checkout van deze repo. WP core staat in `.gitignore` zodat `git pull` alleen de theme-bestanden ververst.
+
+**Eenmalige setup** (in `/var/www/molenaarergonomischadvies.nl/public_html`):
+
+```bash
+cd /var/www/molenaarergonomischadvies.nl/public_html
+sudo git init -b master
+sudo git remote add origin https://github.com/marcelmolenaar/www.molenaarergonomischadvies.nl.git
+sudo git fetch origin
+sudo git checkout -f master
+sudo chown -R www-data:www-data wp-content/themes/molenaar
+```
+
+**Toekomstige updates** — na `git push` lokaal:
+
+```bash
+ssh transip
+cd /var/www/molenaarergonomischadvies.nl/public_html
+sudo git pull
+```
+
+Direct live, geen verdere actie nodig.
 
 ## Theme aanpassen
 
 | Wat | Waar |
 |-----|------|
-| Kleuren | CSS custom properties bovenaan `theme/style.css` (`--c-purple`, `--c-magenta`, …) |
-| Diensten op homepage | `theme/inc/services.php` (titel + 1-regel teaser per dienst) |
-| Pages-content | WP-admin (Pagina's) — of voor een fresh install: `theme/inc/seed.php` |
-| Menu-items | WP-admin (*Weergave → Menu's*) |
-| Logo | `theme/assets/images/logo.svg` (`logo-mark.svg` voor de favicon) |
-| Contactgegevens | `MOLENAAR_CONTACT`-constante in `theme/functions.php` |
+| Kleuren | CSS custom properties bovenaan `wp-content/themes/molenaar/style.css` |
+| Diensten op homepage | `wp-content/themes/molenaar/inc/services.php` |
+| Pages-content | WP-admin → Pagina's |
+| Nieuwsberichten | WP-admin → Nieuws → Nieuw bericht |
+| Menu-items | WP-admin → Weergave → Menu's |
+| Logo | `wp-content/themes/molenaar/assets/images/logo.svg` |
+| Contactgegevens | `MOLENAAR_CONTACT`-constante in `wp-content/themes/molenaar/functions.php` |
 
-Wijzigingen in `theme/` zijn direct zichtbaar (bind-mount, geen rebuild).
+Wijzigingen in `wp-content/themes/molenaar/` zijn direct zichtbaar (bind-mount, geen rebuild). Op productie: na `git pull` direct live.
 
-## Stoppen / opruimen
+## Stoppen / opruimen (lokaal)
 
 ```bash
 docker compose down              # containers stoppen
 docker compose down -v           # ook volumes (DB + WP-core) wissen — fresh install
 ```
-
-Een fresh install doorloopt de WP-installer opnieuw. Theme-activatie seedt opnieuw de pages.
