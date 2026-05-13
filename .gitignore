@@ -53,8 +53,14 @@ build/
 /wp-content/cache/
 /wp-content/backup/
 /wp-content/plugins/
+/wp-content/languages/
+/wp-content/mu-plugins/
+/wp-content/blogs.dir/
 /wp-content/index.php
 /wp-content/debug.log
+/wp-content/object-cache.php
+/wp-content/advanced-cache.php
+/wp-content/sunrise.php
 
 # Themes: alleen ons custom theme, niet de WP defaults (twentytwentyfour, etc.)
 /wp-content/themes/*
