@@ -2,7 +2,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 28" role="img" aria-labelledby="logo-title">
     <title id="logo-title">Molenaar Ergonomisch Advies</title>
     <g transform="translate(-63 -188)" font-family="Verdana, Geneva, Tahoma, sans-serif">
-        <circle cx="76.21" cy="200.96" r="12.23" fill="#7030a0"/>
+        <circle cx="76.21" cy="200.96" r="12.23" fill="#7030a0" stroke="#000" stroke-width="0.35"/>
         <text x="71.76" y="204.33" font-size="9.88" font-weight="bold" fill="#ff99ff">M</text>
         <text x="91.15" y="204.28" font-size="7.76" fill="#7030a0">M</text>
         <text x="97.84" y="204.28" font-size="5.64" fill="#7030a0">OLENAAR</text>
