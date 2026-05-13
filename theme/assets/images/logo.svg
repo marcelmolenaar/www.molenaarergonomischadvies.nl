@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" role="img" aria-labelledby="logo-title">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 28" role="img" aria-labelledby="logo-title">
     <title id="logo-title">Molenaar Ergonomisch Advies</title>
-    <circle cx="45" cy="45" r="42" fill="#6B2C91"/>
-    <path d="M18 70 V20 H30 L45 46 L60 20 H72 V70 H62 V38 L45 58 L28 38 V70 Z" fill="#ffffff"/>
-    <text x="100" y="45" font-family="Georgia, 'Times New Roman', serif" font-size="28" font-weight="600" letter-spacing="3" fill="#6B2C91">MOLENAAR</text>
-    <text x="100" y="70" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="20" fill="#C2367C">Ergonomisch Advies</text>
+    <g transform="translate(-63 -188)" font-family="Verdana, Geneva, Tahoma, sans-serif">
+        <circle cx="76.21" cy="200.96" r="12.23" fill="#7030a0"/>
+        <text x="71.76" y="204.33" font-size="9.88" font-weight="bold" fill="#ff99ff">M</text>
+        <text x="91.15" y="204.28" font-size="7.76" fill="#7030a0">M</text>
+        <text x="97.84" y="204.28" font-size="5.64" fill="#7030a0">OLENAAR</text>
+        <text x="85.74" y="213.65" font-size="3.88" font-style="italic" font-weight="bold" fill="#7030a0">Ergonomisch Advies</text>
+    </g>
 </svg>

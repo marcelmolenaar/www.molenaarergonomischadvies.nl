@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 90" role="img" aria-label="Molenaar Ergonomisch Advies">
-    <circle cx="45" cy="45" r="42" fill="#6B2C91"/>
-    <path d="M18 70 V20 H30 L45 46 L60 20 H72 V70 H62 V38 L45 58 L28 38 V70 Z" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" role="img" aria-label="Molenaar Ergonomisch Advies">
+    <g transform="translate(-63.21 -187.96)" font-family="Verdana, Geneva, Tahoma, sans-serif">
+        <circle cx="76.21" cy="200.96" r="12.23" fill="#7030a0"/>
+        <text x="71.76" y="204.33" font-size="9.88" font-weight="bold" fill="#ff99ff">M</text>
+    </g>
 </svg>
