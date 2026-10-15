@@ -27,7 +27,7 @@ Vervolgens in de browser:
 2. Ga naar *Weergave → Thema's* en activeer **Molenaar Ergonomisch Advies**.
 3. **Klaar.** De theme-activatie maakt automatisch het volgende aan:
    - 4 pages: *Home*, *Diensten*, *Over*, *Contact* — met de teksten van Ellen
-   - CPT "Nieuws" met 2 voorbeeldartikelen
+   - CPT "Nieuws" met 3 voorbeeldartikelen
    - Hoofdmenu met de items, gekoppeld aan de "primary"-locatie
    - Front page → *Home*
    - Pretty permalinks (`/diensten/`, `/nieuws/{slug}/` etc.)
@@ -46,6 +46,7 @@ De repo-structuur **spiegelt de WordPress-structuur**, zodat de productieserver 
 │   ├── over.md
 │   ├── diensten.md
 │   ├── contact.md
+│   ├── nieuws-langdurig-staan.md
 │   ├── nieuws-beweegcultuur.md
 │   └── nieuws-zitten-roken.md
 ├── wp-content/

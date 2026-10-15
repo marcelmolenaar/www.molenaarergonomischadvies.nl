@@ -14,6 +14,8 @@ const MOLENAAR_CONTACT = [
     'btw'     => 'NL002984193B84',
 ];
 
+require_once get_theme_file_path('inc/structured-data.php');
+
 add_action('after_setup_theme', function (): void {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
