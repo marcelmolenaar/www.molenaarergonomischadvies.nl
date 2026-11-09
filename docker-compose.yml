@@ -35,6 +35,7 @@ services:
       - wp_core:/var/www/html
       - ./wp-content/themes/molenaar:/var/www/html/wp-content/themes/molenaar
       - ./uploads:/var/www/html/wp-content/uploads
+      - ./wp-content/uploads/.htaccess:/var/www/html/wp-content/uploads/.htaccess:ro
 
   phpmyadmin:
     image: phpmyadmin:latest
