@@ -15,6 +15,7 @@ const MOLENAAR_CONTACT = [
 ];
 
 require_once get_theme_file_path('inc/structured-data.php');
+require_once get_theme_file_path('inc/canonical.php');
 
 add_action('after_setup_theme', function (): void {
     add_theme_support('title-tag');
