@@ -15,7 +15,7 @@ services:
       retries: 5
 
   wordpress:
-    image: wordpress:php8.4-apache
+    image: wordpress:php8.4-apache@sha256:05f383d5dad5b65b47a12306821744f169c40982e92ac4bd64601d4caff9ade7
     depends_on:
       db:
         condition: service_healthy
